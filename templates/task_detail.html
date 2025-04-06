@@ -1,0 +1,8 @@
+<h2>{{ task.task_name }}</h2>
+<p><strong>Category:</strong> {{ task.task_category }}</p>
+<p><strong>Start:</strong> {{ task.start_time }}</p>
+<p><strong>Due:</strong> {{ task.due_time }}</p>
+<br>
+<!-- <p><strong>Description:</strong> {{ task }}</p> -->
+
+<a href="{{ url_for('list_tasks') }}">← Back to all tasks</a>

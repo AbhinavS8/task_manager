@@ -24,9 +24,11 @@ def login():
 def schedule():
     pass
 
-@app.route("/tasks")
+@app.route("/tasks/")
 def list_tasks():
-    pass
+    overdue_tasks = Task.query.order_by(Task.due_time).filter(Task.due_time < datetime.now()).all()
+    normal_tasks = Task.query.order_by(Task.due_time).filter(Task.due_time < datetime.now()).all()
+    return render_template('task_list.html', tasks=normal_tasks,o_tasks=overdue_tasks)
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
 def create_task():
@@ -50,7 +52,8 @@ def create_task():
 
 @app.route("/tasks/<int:id>")
 def task_detail(id):
-    pass
+    task = Task.query.get_or_404(id)
+    return render_template('task_detail.html', task=task)
 
 @app.route("/tasks/completed")
 def completed_tasks():
