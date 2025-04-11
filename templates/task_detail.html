@@ -2,7 +2,20 @@
 <p><strong>Category:</strong> {{ task.task_category }}</p>
 <p><strong>Start:</strong> {{ task.start_time }}</p>
 <p><strong>Due:</strong> {{ task.due_time }}</p>
+<p><strong>Description:</strong> {{ task.task_description }}</p>
 <br>
-<!-- <p><strong>Description:</strong> {{ task }}</p> -->
+<p><strong>Status:</strong> 
+    {% if task.completed %}
+        Completed
+    {% else %}
+        Not completed
+    {% endif %}
+</p>
+
+{% if not task.completed %}
+<form action="{{ url_for('complete_task', id=task.id) }}" method="POST">
+    <button type="submit">Mark as Completed</button>
+</form>
+{% endif %}
 
 <a href="{{ url_for('list_tasks') }}">← Back to all tasks</a>
