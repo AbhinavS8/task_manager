@@ -6,6 +6,8 @@
 <body>
   <h1>All Tasks</h1>
   <a href="{{ url_for('create_task') }}">Create Task</a>
+  <a href="{{ url_for('schedule')}}">Today Schedule</a>
+
   <br>
   <ul>
     {% for task in tasks %}

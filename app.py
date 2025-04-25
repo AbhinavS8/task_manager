@@ -1,7 +1,7 @@
 from flask import Flask,url_for,redirect,render_template,request
 from forms import TaskForm
 from models import db,Task
-from datetime import datetime,timezone
+from datetime import datetime,timezone, timedelta
 from flask_wtf import FlaskForm
 
 app = Flask(__name__)
@@ -24,12 +24,15 @@ def login():
 
 @app.route("/tasks/schedule")
 def schedule():
-    pass
+    time = (datetime.now(timezone.utc)+timedelta(hours=5,minutes=30)).replace(hour=23, minute=59, second=59, microsecond=0).strftime('%Y-%m-%dT%H:%M')
+
+    tasks = Task.query.filter(Task.completed == False).filter(Task.due_time<time).order_by(Task.due_time).all()
+    return render_template("schedule.html",tasks=tasks)
 
 @app.route("/tasks/")
 def list_tasks():
-    overdue_tasks = Task.query.order_by(Task.due_time).filter(Task.due_time < datetime.now()).all()
-    normal_tasks = Task.query.order_by(Task.due_time).filter(Task.completed == False).filter(Task.due_time < datetime.now()).all()
+    overdue_tasks = Task.query.order_by(Task.due_time).filter(Task.completed == False).all()
+    normal_tasks = Task.query.order_by(Task.due_time).filter(Task.completed == False).all()
     return render_template('task_list.html', tasks=normal_tasks,o_tasks=overdue_tasks)
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
@@ -42,22 +45,16 @@ def create_task():
             task_category=form.task_category.data,
             start_time=form.start_time.data,
             due_time=form.due_time.data,
-            description=form.task_description.data
+            task_description=form.task_description.data
         )
         db.session.add(task)
         db.session.commit()
-        return redirect(url_for('task_list'))
     return render_template('create_task.html', form=form)
 
 @app.route("/tasks/<int:id>")
 def task_detail(id):
     task = Task.query.get_or_404(id)
     return render_template('task_detail.html', task=task)
-
-@app.route("/tasks/completed")
-def completed_tasks():
-    return "<p>Completed tasks page</p>"
-
 
 @app.route("/")
 def hello_world():
