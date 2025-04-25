@@ -1,9 +1,11 @@
 from flask import Flask,url_for,redirect,render_template,request
+from forms import TaskForm
 from models import db,Task
-from datetime import datetime
+from datetime import datetime,timezone
+from flask_wtf import FlaskForm
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = 'key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:abhi@localhost/task_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -32,24 +34,20 @@ def list_tasks():
 
 @app.route('/tasks/create', methods=['GET', 'POST'])
 def create_task():
-    if request.method == 'POST':
-        task_name = request.form['task_name']
-        task_category = request.form['task_category']
-        start_time = datetime.strptime(request.form['start_time'], '%Y-%m-%dT%H:%M')
-        due_time = datetime.strptime(request.form['due_time'], '%Y-%m-%dT%H:%M')
-        task_description = request.form['task_description']
-        task = Task(
-            task_name=task_name,
-            task_category=task_category,
-            start_time=start_time,
-            due_time=due_time,
-            task_description=task_description
-        )
+    form = TaskForm()
 
+    if form.validate_on_submit():
+        task = Task(
+            task_name=form.task_name.data,
+            task_category=form.task_category.data,
+            start_time=form.start_time.data,
+            due_time=form.due_time.data,
+            description=form.task_description.data
+        )
         db.session.add(task)
         db.session.commit()
-        return redirect(url_for('list_tasks'))
-    return render_template("create_task.html")
+        return redirect(url_for('task_list'))
+    return render_template('create_task.html', form=form)
 
 @app.route("/tasks/<int:id>")
 def task_detail(id):

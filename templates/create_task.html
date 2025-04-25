@@ -1,20 +1,23 @@
-<form action="/tasks/create" method="POST">
-    <label>Task Name:</label><br>
-    <input type="text" name="task_name" required><br>
-  
-    <label>Task Category:</label><br>
-    <input type="text" name="task_category" required><br>
-  
-    <label>Start Time:</label><br>
-    <input type="datetime-local" name="start_time" required><br>
-  
-    <label>Due Time:</label><br>
-    <input type="datetime-local" name="due_time" required><br>
-  
-    
-    <label>Task Description:</label><br>
-    <input type="text" name="task_description" required><br>
+<form method="POST">
+  {{ form.hidden_tag() }}
 
-    <input type="submit" value="Create Task">
-  </form>
-  
+  {{ form.task_name.label }}<br>
+  {{ form.task_name(size=32) }}<br><br>
+
+  {{ form.task_category.label }}<br>
+  {{ form.task_category(size=32) }}<br><br>
+
+  {{ form.start_time.label }}<br>
+  {{ form.start_time(type='datetime-local',
+  value=form.start_time.data.strftime('%Y-%m-%dT%H:%M') if form.start_time.data else '') }}
+  <br><br>
+
+  {{ form.due_time.label }}<br>
+  {{ form.due_time(type='datetime-local',
+  value=form.due_time.data.strftime('%Y-%m-%dT%H:%M') if form.due_time.data else '') }}<br><br>
+
+  {{ form.task_description.label }}<br>
+  {{ form.task_description(rows=4, cols=32) }}<br><br>
+
+  {{ form.submit() }}
+</form>
